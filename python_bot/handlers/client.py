@@ -59,11 +59,9 @@ async def process_callback_kb1btn1(callback : types.CallbackQuery):
 
 
 
-@dp.poll_answer_handler()
-async def handle_poll_answer(quiz_answer : types.PollAnswer):
+async def handle_poll_answer(message : types.Message):
     data = work_with_bd.sql_read_quiz(res)
-    id = dict(quiz_answer)['from']['id']
-    my_quiz = await bot.send_poll(id, data[0],
+    await bot.send_poll(message.from_user.id, data[0],
     list(data[1:-1]), type='quiz', correct_option_id=int(data[-1]), is_anonymous=False)
 
 
@@ -74,9 +72,9 @@ async def handle_file(message : types.Message):
     global message_id, file_id
     message_id = message.from_user.id
     file_id = message.document.file_id
-    id_file = work_with_bd.write_id_user()[0]
-    print(id_file)
-    file = await bot.get_file(id_file)
+    # id_file = work_with_bd.write_id_user()[0]
+
+    file = await bot.get_file(file_id)
     file_path = file.file_path
     await bot.download_file(file_path, "tester.py")
     await bot.send_message(message.from_user.id, 'Файл скачан!', reply_markup=checker_button)

@@ -4,7 +4,7 @@ from handlers import client
 
 def sql_start():
     global base, cur
-    base = sq.connect('E://aiogram_bot//python_bot//database//project.db')
+    base = sq.connect('.//database//project.db')
     cur = base.cursor()
     base.commit()
 

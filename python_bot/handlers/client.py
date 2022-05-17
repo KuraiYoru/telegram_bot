@@ -52,7 +52,8 @@ Lesson 7 - Строки. Срезы
 Lesson 8 - Множества
 Lesson 9 - Словари
 Lesson 10 - Функции
-Lesson 11 - Лямбда-функция''', reply_markup=lesson_btn)
+Lesson 11 - Лямбда-функция
+В каждом задании готовый ответ следует подавать в return. Не используйте print()!!!''', reply_markup=lesson_btn)
     
 
 @dp.callback_query_handler(Text(startswith='btn_'))

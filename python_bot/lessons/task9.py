@@ -4,6 +4,6 @@ task = ''' Дан словарь dictionary, а также подается ст
 '''
 
 
-def function(n): # Не изменяйте имя функции
+def function(*n): # Не изменяйте имя функции
     dictionary = {'abc': 0, 'def': 0, 'hij': 0}
     return # Запиши сюда конечный вариант

@@ -35,6 +35,7 @@ class CheckSystem:
         for i in range(len(testers[str(self.num)])):
             if self.checker(self.func, *testers[str(self.num)][i]) == correct_answers[str(self.num)][i]:
                 self.counter += 1
+            print(self.checker(self.func, *testers[str(self.num)][i]))
 
         if self.counter == len(testers[str(self.num)]):
             self.answer = True

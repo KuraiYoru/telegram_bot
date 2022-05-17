@@ -17,16 +17,24 @@ def sql_read_quiz(num):
     return next(cur.execute(f'Select * from quizes Where quiz_id = {num}'))[1:]
 
 
-def write_id_user():
-    cur.execute('Select chat_id from users')
-    row = cur.fetchall()
-    data = list(map(lambda x: ''.join(list(x)), row))
-    if str(client.message_id) not in data:
-        cur.execute('''INSERT INTO users(chat_id, file_id) VALUES(?, ?)''', (str(client.message_id), str(client.file_id)))
-    else:
-        cur.execute(f'''UPDATE users SET file_id = {str(client.file_id)} WHERE {str(client.message_id)} = chat_id''')
-    return next(cur.execute(f'SELECT file_id from users WHERE {str(client.message_id)} = chat_id'))
+class WorkWithUser:
+
+    def __init__(self):
+        self.cursor = cur
+
+    def add_user(self, user_id):
+        with base:
+            self.cursor.execute("INSERT INTO users(user_id) VALUES(?)", (user_id,)).fetchall()
+
+    def user_exists(self, user_id):
+        with base:
+            if (str(user_id),) not in self.cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,)).fetchall():
+                self.add_user(user_id)
     
-# if __name__ == '__main__':
-#     sql_start()
-#     write_id_user()
+    def set_file(self, file_id, user_id):
+        with base:
+            self.cursor.execute("UPDATE users SET file_id = ? WHERE user_id = ?", (file_id, user_id,))
+    
+    def get_file(self, user_id):
+        with base:
+            return next(self.cursor.execute("SELECT file_id from users WHERE user_id = ?", (user_id,)))

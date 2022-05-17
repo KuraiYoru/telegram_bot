@@ -1,18 +1,23 @@
 from aiogram import types, Dispatcher
 from create_bot import dp, bot
-from keyboards import kb_client, lesson_btn, task, checker_button
+from keyboards import kb_client, lesson_btn, task
 from aiogram.types import ReplyKeyboardRemove
 from database import work_with_bd
 from aiogram.dispatcher.filters import Text
 from checker import check_system
 import os
-import sqlite3 as sq
 
 
 res = 1
 
 async def command_start(message : types.Message):
-    await bot.send_message(message.from_user.id, 'Привет! Я бот помощник в изучении Python.', reply_markup=kb_client)
+    await bot.send_message(message.from_user.id, '''Привет! Я бот помощник в изучении Python.
+/advice - Введите эту команду, если хотите прочитать совет от создателя
+/introduction - Перед началом, рекомендую ознакомитться с материалом
+/lessons - При вызове данной команды перед вами откроется списков уроков. Выбрав определённый номер, ознакомьтесь с материалом, а затем пройдите урок 
+или викторину(/send_the_task, /quiz)
+    ''',
+     reply_markup=kb_client)
 
 
 async def introduction(message : types.Message):
@@ -29,7 +34,7 @@ async def advice(message : types.Message):
 Возможно вам попадались различные вакансии программистов, где говорится об очень высокой оплате и востребованности этой професии.
 Это и вправду так, но если тебя привлекает эта деятельность лишь в коммерческих целях, то лучше забросить сразу. Программирование - это трудно,
 зачастую человек не может развиваться, когда всю его мотивацию составляет финансовая зависимость. Программирование - это творчество, которое должно идти от души.
-Тогда, и только тогда стоит делать программирование своим основным заработком.''', reply_markup=ReplyKeyboardRemove())
+Тогда, и только тогда стоит делать программирование своим основным заработком.''', reply_markup=kb_client)
 
 
 async def cancel(message : types.Message):
@@ -65,20 +70,6 @@ async def handle_poll_answer(message : types.Message):
     list(data[1:-1]), type='quiz', correct_option_id=int(data[-1]), is_anonymous=False)
 
 
-@dp.message_handler(content_types=['document'])
-async def handle_file(message : types.Message):
-    if os.path.isfile('tester.py'):
-        os.remove("tester.py")
-    global message_id, file_id
-    message_id = message.from_user.id
-    file_id = message.document.file_id
-    # id_file = work_with_bd.write_id_user()[0]
-
-    file = await bot.get_file(file_id)
-    file_path = file.file_path
-    await bot.download_file(file_path, "tester.py")
-    await bot.send_message(message.from_user.id, 'Файл скачан!', reply_markup=checker_button)
-
 
 async def send_file(message: types.Document):
     if res == 3:
@@ -91,17 +82,16 @@ async def send_file(message: types.Document):
         await message.reply_document(open(f'lessons/task{res}.py', 'rb'))
 
 
+
 def register_handlers(dp : Dispatcher):
-    dp.register_message_handler(command_start, commands=['start'])
+    dp.register_message_handler(command_start, commands=['start', 'help'])
     dp.register_message_handler(introduction, commands=['introduction'])
     dp.register_message_handler(advice, commands=['advice'])
     dp.register_message_handler(lessons, commands=['lessons'])
     dp.register_message_handler(handle_poll_answer, commands=['quiz'])
     dp.register_message_handler(cancel, commands=['cancel'])
     dp.register_message_handler(send_file, commands=['send_the_task'])
-    dp.register_message_handler(check_system.check_the_task, commands=['check_the_task'])
-
 
 
     
- 
+
